@@ -3,17 +3,29 @@ class PostsController < ApplicationController
     @posts = Post.all
   end
 
-  def new 
+
+  def new
+    if !user_signed_in?
+      redirect_to '/users/sign_in'
+    end
     @post = Post.new
   end
 
-  def create
-    @post = Post.new(article_params)
+  def show
+    @post = Post.find(params[:id])
+  end
 
-    if @post.save
-      redirect_to @post
-    else
-      render :new, status: :unprocessable_entity
+  def create
+    if !user_signed_in?
+      redirect_to '/users/sign_in'
+    end
+    user_model = User.find(current_user.id)
+    begin
+      new_post = user_model.post.create!(article_params)
+      redirect_to "/posts/#{new_post.id}"
+    rescue ActiveRecord::RecordInvalid => e
+      logger.info("#{e}")
+      render :error, locals: {err_msg: "#{e}"}, status: 422
     end
   end
 
