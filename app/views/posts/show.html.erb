@@ -1,4 +1,6 @@
 <html>
+<%= link_to 'Edit', edit_post_path(@post) %>
+<%= link_to 'Destroy', "/posts/#{@post.id}/delete" %>
 <p>
   <strong>User:</strong>
   <%= @post.user.email %>
